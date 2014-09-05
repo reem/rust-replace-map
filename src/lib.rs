@@ -28,6 +28,6 @@ where F: |: T| -> T {
     let b = &mut a;
 
     replace_map(b, |: x: uint| x * 2);
-    assert_eq!(*b, 128u);
+    assert_eq!(*b, 14u);
 }
 
