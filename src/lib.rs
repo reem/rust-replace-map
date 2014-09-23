@@ -15,7 +15,7 @@ use std::ptr;
 /// ergonomic in cases where producing a value to pass to mem::replace
 /// is hard.
 pub fn replace_map<'a, T, F>(src: &mut T, prod: F)
-where F: |: T| -> T {
+where F: FnOnce(T) -> T {
     // Read the value, pass it to prod, then write-over src.
     //
     // Safe because the value originally behind src is dropped
