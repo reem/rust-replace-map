@@ -1,11 +1,9 @@
 [package]
 
 name = "replace-map"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Jonathan Reem <jonathan.reem@gmail.com>"]
-
-[lib]
-
-name = "replace-map"
-path = "src/lib.rs"
+repository = "https://github.com/reem/rust-replace-map"
+description = "Perform by-value operations through an &mut reference."
+license = "MIT"
 
