@@ -1,8 +1,7 @@
-#![license = "MIT"]
 #![deny(missing_docs)]
 #![deny(warnings)]
 
-#![feature(unboxed_closures, overloaded_calls)]
+#![feature(unboxed_closures)]
 
 //! Exposes `replace_map`, for replacing values at mutable memory locations.
 
@@ -17,17 +16,37 @@ use std::ptr;
 ///
 /// The passed in closure *must* not panic or destructors will run on
 /// an instance of T twice.
-pub unsafe fn replace_map<'a, T, F>(src: &mut T, prod: F)
+pub fn replace_map<'a, T, F>(src: &mut T, prod: F)
 where F: FnOnce(T) -> T {
     // Read the value, pass it to prod, then write-over src.
-    *src = prod(ptr::read(src as *mut T as *const T));
+    *src = prod(unsafe { ptr::read_and_zero(src as *mut T) });
 }
 
 #[test] fn test_works() {
     let mut a = 7u;
     let b = &mut a;
 
-    unsafe { replace_map(b, |: x: uint| x * 2); }
+    replace_map(b, |: x: uint| x * 2);
     assert_eq!(*b, 14u);
+}
+
+#[test] fn is_panic_safe() {
+    static mut DROP_COUNT: uint = 0;
+    struct Dropper;
+
+    impl Drop for Dropper {
+        fn drop(&mut self) {
+            unsafe { DROP_COUNT += 1 }
+        }
+    }
+
+    std::task::try(proc() {
+        let mut a = Dropper;
+        let b = &mut a;
+
+        replace_map(b, |: _| panic!("Muahaha"));
+    }).unwrap_err();
+
+    assert_eq!(unsafe { DROP_COUNT }, 1);
 }
 
