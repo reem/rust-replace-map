@@ -40,12 +40,13 @@ where F: FnOnce(T) -> T {
         }
     }
 
-    std::task::try(proc() {
-        let mut a = Dropper;
+    let mut a = Dropper;
+
+    assert!(std::thread::Thread::spawn(move || {
         let b = &mut a;
 
         replace_map(b, |: _| panic!("Muahaha"));
-    }).unwrap_err();
+    }).join().is_err());
 
     assert_eq!(unsafe { DROP_COUNT }, 1);
 }
