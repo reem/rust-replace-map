@@ -13,9 +13,6 @@ use std::ptr;
 /// Does not create an intermediate value, so is more efficient and
 /// ergonomic in cases where producing a value to pass to mem::replace
 /// is hard.
-///
-/// The passed in closure *must* not panic or destructors will run on
-/// an instance of T twice.
 pub fn replace_map<'a, T, F>(src: &mut T, prod: F)
 where F: FnOnce(T) -> T {
     // Read the value, pass it to prod, then write-over src.
