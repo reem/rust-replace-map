@@ -1,3 +1,4 @@
+#![allow(unstable)]
 #![deny(missing_docs)]
 #![deny(warnings)]
 
@@ -20,15 +21,15 @@ where F: FnOnce(T) -> T {
 }
 
 #[test] fn test_works() {
-    let mut a = 7u;
+    let mut a = 7;
     let b = &mut a;
 
-    replace_map(b, |: x: uint| x * 2);
-    assert_eq!(*b, 14u);
+    replace_map(b, |: x: usize| x * 2);
+    assert_eq!(*b, 14);
 }
 
 #[test] fn is_panic_safe() {
-    static mut DROP_COUNT: uint = 0;
+    static mut DROP_COUNT: usize = 0;
     struct Dropper;
 
     impl Drop for Dropper {
@@ -37,12 +38,12 @@ where F: FnOnce(T) -> T {
         }
     }
 
-    std::task::try(proc() {
+    std::thread::Thread::scoped(move || {
         let mut a = Dropper;
         let b = &mut a;
 
         replace_map(b, |: _| panic!("Muahaha"));
-    }).unwrap_err();
+    }).join().unwrap_err();
 
     assert_eq!(unsafe { DROP_COUNT }, 1);
 }
