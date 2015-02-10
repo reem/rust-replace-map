@@ -1,8 +1,9 @@
-#![allow(unstable)]
-#![deny(missing_docs)]
-#![deny(warnings)]
+#![feature(core)]
+#![cfg_attr(test, feature(std_misc))]
 
-#![feature(unboxed_closures)]
+#![deny(missing_docs)]
+#![cfg_attr(test, deny(warnings))]
+
 
 //! Exposes `replace_map`, for replacing values at mutable memory locations.
 
@@ -24,7 +25,7 @@ where F: FnOnce(T) -> T {
     let mut a = 7;
     let b = &mut a;
 
-    replace_map(b, |: x: usize| x * 2);
+    replace_map(b, |x: usize| x * 2);
     assert_eq!(*b, 14);
 }
 
@@ -42,7 +43,7 @@ where F: FnOnce(T) -> T {
         let mut a = Dropper;
         let b = &mut a;
 
-        replace_map(b, |: _| panic!("Muahaha"));
+        replace_map(b, |_| panic!("Muahaha"));
     }).join().unwrap_err();
 
     assert_eq!(unsafe { DROP_COUNT }, 1);
