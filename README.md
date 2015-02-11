@@ -1,8 +1,8 @@
 # Replace Map
 
-> Replace the value at a mutable memory location using a `|: T| -> T` closure.
+> Replace the value at an `&mut T` using a `FnOnce(T) -> T` closure.
 
-Does not create an intermediate value, so is more efficient and
-ergonomic in cases where producing a value to pass to mem::replace
-is hard.
+`replace_map` is more ergonomic in cases where producing a value to
+pass to mem::replace is hard. Unfortunately, `replace_map` is not safe
+in all cases, so care must be taken when using it.
 
